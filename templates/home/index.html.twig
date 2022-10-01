@@ -5,4 +5,5 @@
 {% block body %}
     <h2>Welcome !</h1>
 <p>You are logged as {{ app.user.username }}</p>
+<a href="{{ url('app_logout') }}">Logout</a>
 {% endblock %}
