@@ -12,8 +12,8 @@ class UserFixtures extends Fixture
     private $hasher;
 
     static $users = [
-        'admin' => ['admin', ['ADMIN']],
-        'user' => ['user', ['USER']],
+        'admin' => ['admin', 'admin@localhost', ['ADMIN']],
+        'user' => ['user', 'user@localhost', ['USER']],
     ];
 
     public function __construct(UserPasswordHasherInterface $hasher) 
@@ -26,7 +26,8 @@ class UserFixtures extends Fixture
         foreach (self::$users as $name => $u) {
             $entity = (new User()) 
                 ->setUsername($name)
-                ->setRoles($u[1])
+                ->setEmail($u[1])
+                ->setRoles($u[2])
             ;
             $entity->setPassword($this->hasher->hashPassword($entity, $u[0]));
             $manager->persist($entity);
