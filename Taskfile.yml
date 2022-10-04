@@ -1,0 +1,22 @@
+version: '3'
+dotenv: [".env", ".env.test"]
+
+tasks:
+  # initialisation du projet
+  init:
+    cmds:
+      - composer install
+      - yarn install
+      - docker compose up -d
+      - symfony console d:m:m -n
+      - symfony local:server:ca:install
+  # commence à développer
+  dev-start:
+    cmds:
+      - docker compose start
+      - symfony local:server:start -d
+
+  dev-stop:
+    cmd:
+      - docker compose stop
+      - symfony local:server:stop
