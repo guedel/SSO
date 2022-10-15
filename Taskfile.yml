@@ -1,22 +1,40 @@
+# taskfile reference: https://taskfile.dev/api/
 version: '3'
 dotenv: [".env", ".env.test"]
 
 tasks:
   # initialisation du projet
   init:
+    desc: initialisation du projet après clonage
     cmds:
       - composer install
       - yarn install
       - docker compose up -d
       - symfony console d:m:m -n
       - symfony local:server:ca:install
-  # commence à développer
-  dev-start:
+  
+  dev:start:
+    desc: Procédure à lancer au début du développement
     cmds:
       - docker compose start
       - symfony local:server:start -d
+      - task dev:browse
 
-  dev-stop:
-    cmd:
+  dev:browse:
+      - symfony open:local
+
+  dev:stop:
+    desc: Procédure à lancer en fin de développement
+    cmds:
       - docker compose stop
       - symfony local:server:stop
+
+  dev:watch:
+    desc: Surveille les changements
+    cmds:
+      - echo "watch"
+
+  dev:tests:
+    desc: Réalise les tests
+    cmds:
+      - echo "Tests"
