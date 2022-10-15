@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -55,6 +56,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $this->add($user, true);
     }
+
+    public function loadUserByIdentifier(string $identifier): ?User
+    {
+        $entityManager = $this->getEntityManager();
+        $user = null;
+    
+        // Check if the identifier is an email address
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $user = $this->findOneBy(['email' => $identifier]);
+        }
+        /*
+        if (Uuid::isValid($identifier)) {
+            $user = $this->findOneBy(['uuid' => Uuid::fromString($identifier)->toBinary()]);
+        }
+        */
+        if ($user === null) {
+            $user = $this->findOneBy(['username' => $identifier]);
+        }
+        return $user;
+    }    
 
 //    /**
 //     * @return User[] Returns an array of User objects
