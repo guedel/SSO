@@ -24,8 +24,12 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::$users as $name => $u) {
-            $entity = (new User()) 
-                ->setUsername($name)
+            $entity = $manager->getRepository(User::class)->findOneBy(['username' => $name]);
+            if (! $entity) {
+                $entity = (new User()) 
+                ->setUsername($name);
+            }
+            $entity
                 ->setEmail($u[1])
                 ->setRoles($u[2])
             ;
