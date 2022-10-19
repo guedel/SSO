@@ -1,18 +1,46 @@
 # taskfile reference: https://taskfile.dev/api/
 version: '3'
-dotenv: [".env", ".env.test"]
+dotenv: [".env.local", ".env.dev", ".env"]
+env:
+  SF: "symfony"
+  SFC: "symfony console"
+  PHP: "symfony php"
 
 tasks:
   # initialisation du projet
+  check:reqs:
+    desc: Test des prérequis
+    cmds:
+      - $SF local:check:requirements
+
   init:
+    run: once
     desc: initialisation du projet après clonage
     cmds:
       - composer install
       - yarn install
       - docker compose up -d
-      - symfony console d:m:m -n
-      - symfony local:server:ca:install
+      - $SF local:server:ca:install
+      - $SFC d:m:m -n
   
+  dev:init:
+    desc: préparation au développement
+    cmds: # création des certificats et des clés
+      - $PHP -r "echo 'OAUTH_PASSPHRASE=';"> {{.ENV}}
+      - $PHP -r "echo md5(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
+      - $PHP -r "echo 'OAUTH_ENCRYPTION_KEY=';" >> {{.ENV}}
+      - $PHP -r "echo md5(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
+      - task dev:create-keys
+    vars:
+      ENV: ".env.dev"
+
+  dev:create-keys:
+    desc: création des clés d'authentification
+    cmds:
+      - $PHP -r "@mkdir('var/keys');"
+      - openssl genrsa -aes128 -passout pass:$OAUTH_PASSPHRASE -out var/keys/private.key 2048
+      - openssl rsa -in var/keys/private.key -passin pass:$OAUTH_PASSPHRASE -pubout -out var/keys/public.key
+
   dev:start:
     desc: Procédure à lancer au début du développement
     cmds:
