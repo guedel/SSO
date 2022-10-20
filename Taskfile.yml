@@ -14,7 +14,7 @@ tasks:
       - $SF local:check:requirements
 
   init:
-    run: once
+    #run: once
     desc: initialisation du projet après clonage
     cmds:
       - composer install
@@ -65,4 +65,10 @@ tasks:
   dev:tests:
     desc: Réalise les tests
     cmds:
-      - echo "Tests"
+      - $PHP bin/phpunit  --disallow-todo-tests
+
+  dev:add-app:
+    desc: ajoute une application
+    cmds:
+      - echo "add app"
+      
