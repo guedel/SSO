@@ -27,9 +27,9 @@ tasks:
     desc: préparation au développement
     cmds: # création des certificats et des clés
       - $PHP -r "echo 'OAUTH_PASSPHRASE=';"> {{.ENV}}
-      - $PHP -r "echo md5(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
+      - $PHP -r "echo bin2hex(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
       - $PHP -r "echo 'OAUTH_ENCRYPTION_KEY=';" >> {{.ENV}}
-      - $PHP -r "echo md5(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
+      - $PHP -r "echo bin2hex(random_bytes(32)), PHP_EOL;" >> {{.ENV}}
       - task dev:create-keys
     vars:
       ENV: ".env.dev"
@@ -71,4 +71,3 @@ tasks:
     desc: ajoute une application
     cmds:
       - echo "add app"
-      
